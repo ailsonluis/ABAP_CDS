@@ -1,0 +1,45 @@
+//Dados de classes e valores de caracteristicas (CL02/CT04/CL24N)
+@AbapCatalog.sqlViewName: 'ZDDL_CLASSIF'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Dados de Classificação Objeto atribuidos'
+define view ZCDS_DATA_CLASSIFICATION  as select from ausp as _ausp 
+                     inner join cabn as _cabn on _cabn.atinn = _ausp.atinn
+                     left outer join cawn as _cawn on _ausp.atinn = _cawn.atinn 
+                                                    and _ausp.atwrt = _cawn.atwrt
+                     left outer join cawnt as _cawnt on _cawn.atinn = _cawnt.atinn 
+                                                    and _cawn.atzhl = _cawnt.atzhl        
+                                                    and _cawn.adzhl = _cawnt.adzhl
+ {
+ 
+  _ausp.objek as objek,
+   _cabn.atnam,
+  _ausp.klart as klart,
+  _ausp.atwrt as atwrt,
+  case
+   when _ausp.curr_value_from > 0 then _ausp.curr_value_from
+  end as value_from,
+  
+  case
+   when _ausp.curr_value_to > 0 then _ausp.curr_value_to
+   
+  end as value_to,
+  case 
+    when _ausp.atcod = '1' and _ausp.curr_value_to = 0 then  _ausp.atwrt 
+    when _ausp.atcod = '1' and _ausp.curr_value_to > 0 then concat( '= ', cast( _ausp.curr_value_to as abap.char( 25 ) ))
+    
+    when _ausp.atcod = '3' then concat( cast(_ausp.curr_value_from as abap.char( 25 )) ,concat(' - ', cast(_ausp.curr_value_to as abap.char( 25 )) ))
+   
+    when _ausp.atcod = '6' then concat( '< ', cast( _ausp.curr_value_to as abap.char( 25 ) ))
+    when _ausp.atcod = '7' then concat( '<= ', cast( _ausp.curr_value_to as abap.char( 25 ) ))
+    when _ausp.atcod = '8' then concat( '> ', cast( _ausp.curr_value_from as abap.char( 25 ) ))
+    when _ausp.atcod = '9' then concat( '>= ', cast( _ausp.curr_value_from as abap.char( 25 ) ))
+    
+  end as value,
+  
+  _cawnt.atwtb as description
+ 
+ } 
+   
+ 
