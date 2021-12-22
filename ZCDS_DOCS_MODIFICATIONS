@@ -1,0 +1,42 @@
+@AbapCatalog.sqlViewName: 'ZDDL_DOCSMODIF'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Documentos de modificação de objetos'
+define view ZCDS_DOCS_MODIFICATIONS
+  as select from cdhdr
+  association [0..*] to cdpos as _cdpos on  $projection.objectclas = _cdpos.objectclas
+                                        and $projection.objectid   = _cdpos.objectid
+                                        and $projection.changenr   = _cdpos.changenr
+  association[0..*] to user_addrp as _user on $projection.username = _user.bname
+{
+  key  cdhdr.mandant,
+  key  cdhdr.objectclas,
+  key  cdhdr.objectid,
+  key  cdhdr.changenr,
+  key  _cdpos.tabname,
+  key  _cdpos.tabkey,
+  key  _cdpos.fname,
+  key  _cdpos.chngind,
+       cdhdr.username,
+       _user.name_text,
+       cdhdr.udate,
+       cdhdr.utime,
+       cdhdr.tcode,
+       cdhdr.planchngnr,
+       cdhdr.act_chngno,
+       cdhdr.was_plannd,
+       cdhdr.change_ind,
+       cdhdr.langu,
+       cdhdr.version,
+       cdhdr._dataaging,
+      _cdpos.text_case,
+       _cdpos.unit_old,
+       _cdpos.unit_new,
+       _cdpos.cuky_old,
+       _cdpos.cuky_new,
+       _cdpos.value_new,
+       _cdpos.value_old
+
+} 
+ 
