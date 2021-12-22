@@ -1,0 +1,69 @@
+@AbapCatalog.sqlViewName: 'ZDDL_APRESTR_D'
+@EndUserText.label: 'Approval strategy detail'
+define view zcds_approval_strategy_detail 
+ as select from t16fs
+ left outer join  kssk as _kssk on _kssk.objek = concat( t16fs.frggr, t16fs.frgsx )  
+
+ association[1..1] to t16fg as _t16fg on $projection.frggr = _t16fg.frggr 
+ association[1..1] to t16ft as _t16ft on t16fs.frggr = _t16ft.frggr
+                                     and t16fs.frgsx = _t16ft.frgsx
+                                     
+                                      
+ association[1..*] to t16fw as _t16fw1 on $projection.frggr = _t16fw1.frggr
+                                     and $projection.apr1 = _t16fw1.frgco
+                                     
+ association[1..*] to t16fw as _t16fw2 on $projection.frggr = _t16fw2.frggr
+                                     and $projection.apr2 = _t16fw2.frgco  
+
+ association[1..*] to t16fw as _t16fw3 on $projection.frggr = _t16fw3.frggr
+                                     and $projection.apr3 = _t16fw3.frgco                                       
+ association[1..*] to t16fw as _t16fw4 on $projection.frggr = _t16fw4.frggr
+                                     and $projection.apr4 = _t16fw4.frgco                                      
+ association[1..*] to t16fw as _t16fw5 on $projection.frggr = _t16fw5.frggr
+                                     and $projection.apr5 = _t16fw5.frgco  
+ association[1..*] to t16fw as _t16fw6 on $projection.frggr = _t16fw6.frggr
+                                     and $projection.apr6 = _t16fw6.frgco                                      
+ association[1..*] to t16fw as _t16fw7 on $projection.frggr = _t16fw7.frggr
+                                     and $projection.apr7 = _t16fw7.frgco      
+ association[1..*] to t16fw as _t16fw8 on $projection.frggr = _t16fw8.frggr
+                                     and $projection.apr8 = _t16fw8.frgco  
+                                                                                                                                                                                
+ 
+ {
+    key frggr,
+    key frgsx,
+    @EndUserText:{ label: 'Objeto',quickInfo: 'Objeto' }
+    concat(frggr, frgsx) as objetc,
+    _kssk.statu,
+    _kssk.clint,
+    _t16fg.frgkl,
+    _t16fg.frgot,
+    _t16ft.frgxt,
+    t16fs.frgc1 as apr1,
+   _t16fw1.objid as user1,
+   
+     t16fs.frgc2 as apr2,
+   _t16fw2.objid as user2,
+   
+     t16fs.frgc3 as apr3,
+   _t16fw3.objid as user3,
+   
+     t16fs.frgc4 as apr4,
+   _t16fw4.objid as user4,
+   
+     t16fs.frgc5 as apr5,
+   _t16fw5.objid as user5,
+   
+     t16fs.frgc6 as apr6,
+   _t16fw6.objid as user6,
+   
+     t16fs.frgc7 as apr7,
+   _t16fw7.objid as user7,
+   
+     t16fs.frgc8 as apr8,
+   _t16fw8.objid as user8
+   
+    
+     
+}  
+ 
