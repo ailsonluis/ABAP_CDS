@@ -1,0 +1,28 @@
+@AbapCatalog.sqlViewName: 'ZDDL_DATASOP'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Dados de SOP'
+define view ZCDS_DATA_SOP as select from s076 
+ association[0..1] to makt as _makt on $projection.pmnux = _makt.matnr
+  { 
+  s076.vrsio,
+  s076.spmon,
+  s076.pmnux,
+  _makt.maktx,
+  s076.wenux,
+  s076.basme,
+  @EndUserText:{ label: 'Vendas',quickInfo: 'Quantidade de vendas' }
+  fltp_to_dec( s076.absat as abap.quan( 10, 2 ) ) as absat,
+  @EndUserText:{ label: 'Produção',quickInfo: 'Quantidade de Produção' }
+  fltp_to_dec( s076.produ as abap.quan( 10, 2 ) ) as produ,
+  @EndUserText:{ label: 'Estoque Inicial',quickInfo: 'Estoque Inicial' }
+  fltp_to_dec( s076.lagri as abap.quan( 10, 2 ) ) as lagri,
+  @EndUserText:{ label: 'Est.Planjeado',quickInfo: 'Estoque Planejado' }
+  fltp_to_dec( s076.lagrz as abap.quan( 10, 2 ) ) as lagrz,
+  @EndUserText:{ label: 'Cobertura',quickInfo: 'Cobertura' }
+  fltp_to_dec( s076.reich as abap.quan( 10, 2 ) ) as reich,
+  @EndUserText:{ label: 'Cobertura plan',quickInfo: 'Cobertura planejada' }
+  fltp_to_dec( s076.reicz as abap.quan( 10, 2 ) ) as reicz
+}
+where _makt.spras = $session.system_language 
