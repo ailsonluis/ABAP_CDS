@@ -1,0 +1,26 @@
+@AbapCatalog.sqlViewName: 'ZCDSAPROVALREQ'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Date Approvals Requisition item'
+define view ZCDS_DATE_APPROVAL_PUREQ
+  as select from ZCDS_DOCS_MODIFICATIONS
+  
+{
+  @EndUserText:{ label: 'Requisição',quickInfo: 'Requisição' }
+  substring(ZCDS_DOCS_MODIFICATIONS.tabkey, 4, 10) as requisition,
+   @EndUserText:{ label: 'Item',quickInfo: 'Item' }
+  substring(ZCDS_DOCS_MODIFICATIONS.tabkey, 14, 5) as requisitionItem, 
+   @EndUserText:{ label: 'RequiçãoItem',quickInfo: 'Requisição e item' } 
+  right(ZCDS_DOCS_MODIFICATIONS.tabkey,15) as requisitionItemFull,
+  @EndUserText:{ label: 'Data Aprovação',quickInfo: 'Data Aprovação' }
+  max(ZCDS_DOCS_MODIFICATIONS.udate)                as approvalDate
+
+
+}
+where ZCDS_DOCS_MODIFICATIONS.objectclas = 'BANF'
+  and ZCDS_DOCS_MODIFICATIONS.tabname    = 'EBAN'
+  and ZCDS_DOCS_MODIFICATIONS.fname      = 'BANPR'
+  and ZCDS_DOCS_MODIFICATIONS.value_new  = '05'
+group by
+  ZCDS_DOCS_MODIFICATIONS.tabkey
