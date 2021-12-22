@@ -1,0 +1,34 @@
+@AbapCatalog.sqlViewName: 'ZDDL_STOCKONDATE'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Stock on date'
+define view ZCDS_STOCK_ON_DATE 
+    with parameters p_werks : werks_d,
+                    p_budat : abap.dats
+as select from matdoc
+
+association[1..1] to I_MaterialDescription  as MaterialDescription on $projection.matnr = MaterialDescription.Material
+
+{
+
+@EndUserText:{ label: 'Data',quickInfo: 'Estoque na Data' }
+$parameters.p_budat as dateStock,
+matdoc.matnr,
+MaterialDescription.MaterialDescription,
+matdoc.werks,
+matdoc.lgort_sid,
+matdoc.charg_sid,
+matdoc.sobkz,
+case
+   when lifnr_sid is not null then lifnr_sid
+   when kunnr_sid is not null then kunnr_sid 
+end as partner,
+
+sum(matdoc.stock_qty) as stock
+}
+
+ where werks = $parameters.p_werks
+   and budat <= $parameters.p_budat
+       group by matnr, MaterialDescription.MaterialDescription, werks, lgort_sid, charg_sid,sobkz,lifnr_sid,kunnr_sid
+       having sum( stock_qty ) > 0 
