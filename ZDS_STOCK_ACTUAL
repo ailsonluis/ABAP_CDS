@@ -2,12 +2,10 @@
 @AbapCatalog.compiler.compareFilter: true
 @AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #CHECK
+@OData.publish: true
 @EndUserText.label: 'Saldo em estoque atual'
 define view ZDS_STOCK_ACTUAL 
-
 as select from matdoc
-
-
 association[1..1] to I_MaterialDescription  as MaterialDescription on $projection.matnr = MaterialDescription.Material
 association[1..1] to I_Material as _material on $projection.matnr = _material.Material
 association[1..1] to ibusinesspartner as IVendor on $projection.lifnr_sid = IVendor.businesspartner
@@ -18,49 +16,44 @@ association[1..1] to ibatch as _IBatch on $projection.matnr = _IBatch.material
 
 {
 
-matdoc.matnr,
-
+key matdoc.matnr,
+key matdoc.werks,
 MaterialDescription.MaterialDescription,
 _material.MaterialBaseUnit,
 _material.MaterialType,
-matdoc.werks,
 matdoc.lgort_sid,
 matdoc.charg_sid,
 matdoc.sobkz,
-//@EndUserText:{ label: 'Parceiro',quickInfo: 'Parceiro' }
-//case
-//   when lifnr_sid is not null then lifnr_sid
-//   when kunnr_sid is not null then kunnr_sid 
-//   else ''
-//end as partner,
 lifnr_sid,
-IVendor.businesspartnerfullname as Vendor,
+@Semantics.text: true
+    
+@EndUserText:{ label: 'Desc.Fornecedor',quickInfo: 'Desc.Fornecedor' }
+cast ( IVendor.businesspartnerfullname as /b631/oivendor ) as Vendor,
 kunnr_sid,
-ICustumer.businesspartnerfullname as custumer,
+@EndUserText:{ label: 'Desc.Cliente',quickInfo: 'Desc.Cliente' }
+cast( ICustumer.businesspartnerfullname as /b631/oicustomer)   as custumer,
 
 matdoc.lbbsa_sid,
 @EndUserText:{ label: 'Saldo',quickInfo: 'Saldo' }
-sum(matdoc.stock_qty) as stock,
-
+sum(  matdoc.stock_qty ) as stock   ,
 _IBatch.batchbysupplier,
 _IBatch.manufacturedate,
 _IBatch.shelflifeexpirationdate,
 @EndUserText:{ label: 'Valiade em Dias',quickInfo: 'Validade Em Dias' }
 case 
-    when matdoc.charg_sid is not null then DATS_DAYS_BETWEEN(_IBatch.manufacturedate,_IBatch.shelflifeexpirationdate )
+    when matdoc.charg_sid is not null then  DATS_DAYS_BETWEEN(_IBatch.manufacturedate,_IBatch.shelflifeexpirationdate )  
     else 0    
 end as PrazoValidade,
 
 @EndUserText:{ label: 'Dias p/ Vencimento',quickInfo: 'Dias p/ Vencimento' }
 case
- when matdoc.charg_sid is not null then DATS_DAYS_BETWEEN(cast( $session.system_date as abap.dats ),_IBatch.shelflifeexpirationdate )
+ when matdoc.charg_sid is not null then DATS_DAYS_BETWEEN(_IBatch.shelflifeexpirationdate, cast( $session.system_date as abap.dats ) )
  else 0 
 end as DiasVencimento,
 
-
-
 @EndUserText:{ label: 'Data atual',quickInfo: 'Data Atual' }
 cast( $session.system_date as abap.dats ) as DataAtual
+
 
 
 }
@@ -72,4 +65,4 @@ cast( $session.system_date as abap.dats ) as DataAtual
           IVendor.businesspartnerfullname, ICustumer.businesspartnerfullname,_IBatch.batchbysupplier,
 _IBatch.manufacturedate,
 _IBatch.shelflifeexpirationdate 
- //having sum( stock_qty ) > 0 
+
