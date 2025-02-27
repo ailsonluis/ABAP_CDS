@@ -1,0 +1,67 @@
+@AbapCatalog.sqlViewName: 'ZCDSPACKSPEC'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Dados de Especificação de embalagens'
+@Metadata.ignorePropagatedAnnotations: true
+define view ZCDS_EWM_PACKSPEC as select from /scwm/pvpakc
+    inner join mara on mara.scm_matid_guid16 =  /scwm/pvpakc.matid
+    inner join  posvid on posvid.pvguid =  /scwm/pvpakc.pvguid  
+    inner join  pnodid on pnodid.pnguid =  posvid.pnguid
+    inner join  pnodtx on pnodtx.pnguid = pnodid.pnguid
+    inner join /1cn/apssappal01 on /1cn/apssappal01.ps_guid = posvid.pnguid
+                                and /1cn/apssappal01.release_status = ''
+    inner join  paltid on paltid.pguid = posvid.pnguid
+    
+    
+    inner join /scwm/papak on /scwm/papak.paguid =   paltid.paguid 
+    inner join /scwm/pnpakh on /scwm/pnpakh.pnguid = posvid.pnguid
+                               and /scwm/pnpakh.status = 'A'
+    inner join /scwm/t300_md on /scwm/t300_md.scuguid =   /1cn/apssappal01.pak_locid                       
+{
+   /scwm/pvpakc.pvguid,
+   /scwm/pvpakc.pvcnt,
+   
+   posvid.nameid,
+   posvid.pnguid,
+   pnodid.pname,
+   pnodid.pntype,
+   
+   paltid.paguid,
+   paltid.patype,
+   
+   /1cn/apssappal01.pak_locid,
+   
+   pnodtx.pntext,
+   
+   /scwm/t300_md.lgnum,
+   /scwm/t300_md.entitled,
+   /scwm/t300_md.custodian,
+   cast( right( /scwm/t300_md.entitled,4 ) as werks_d) as werks,
+   /scwm/t300_md.sc_unit,
+   
+   /scwm/pvpakc.matid,
+   mara.matnr,
+   mara.scm_matid_guid16,
+   mara.scm_matid_guid22,
+   
+   /scwm/pvpakc.unit,
+   /scwm/pvpakc.quan,
+   /scwm/pvpakc.meins,
+   
+   /scwm/papak.trgqty,
+   /scwm/papak.minqty,
+   /scwm/papak.rndqty,
+   division( /scwm/papak.trgqty ,  /scwm/papak.rndqty ,2 ) as stackqtdy,
+   /scwm/papak.quancla,
+   /scwm/papak.hutyp,
+   /scwm/papak.g_weight,
+   /scwm/papak.n_weight,
+   /scwm/papak.unit_gw,
+   /scwm/papak.t_weight,
+   /scwm/papak.unit_tw,
+   /scwm/papak.g_volume,
+   /scwm/papak.n_volume,
+   /scwm/papak.unit_gv
+}
+
